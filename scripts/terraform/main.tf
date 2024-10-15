@@ -146,6 +146,11 @@ resource "aws_dynamodb_table" "merchants_table" {
   }
 
   attribute {
+    name = "amount_limit"
+    type = "N"
+  }
+
+  attribute {
     name = "merchant_type"
     type = "S"
   }
@@ -164,6 +169,13 @@ resource "aws_dynamodb_table" "merchants_table" {
   global_secondary_index {
     name               = "DocumentTypeIndex"
     hash_key           = "document_type"
+    projection_type    = "ALL"
+  }
+
+    # Global Secondary Index for amount_limit
+  global_secondary_index {
+    name               = "AmountLimitIndex"
+    hash_key           = "amount_limit"
     projection_type    = "ALL"
   }
 
