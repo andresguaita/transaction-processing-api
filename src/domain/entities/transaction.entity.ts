@@ -5,7 +5,8 @@ export class Transaction {
       public merchantId: string,     
       public status: string,          
       public createdAt: string,     
-      public amount: number       
+      public amount: number,
+      public payment_type: string
     ) {}
   }
   

@@ -17,4 +17,8 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   status: string;
 
+  @IsString()
+  @IsNotEmpty()
+  payment_type: string;
+
 }

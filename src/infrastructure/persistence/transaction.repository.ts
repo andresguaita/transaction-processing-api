@@ -9,7 +9,14 @@ export class TransactionRepository {
   async save(transaction: Transaction): Promise<void> {
     const params = {
       TableName: process.env.DYNAMODB_TRANSACTIONS_TABLE,
-      Item: transaction,
+      Item:  {
+        transaction_id: transaction.transactionId,
+        account_id: transaction.accountId,
+        merchant_id: transaction.merchantId,
+        amount: transaction.amount,
+        status: transaction.status,
+        created_at: transaction.createdAt
+      },
     };
     await this.dynamoService.put(params);
   }

@@ -7,9 +7,9 @@ import { CreateTransactionDto } from '../../application/dtos/create-transaction.
 export class SqsService {
   private sqsClient = new SQSClient({ region: process.env.AWS_REGION });
 
-  async sendMessage(transaction: CreateTransactionDto): Promise<void> {
+  async sendMessage(transaction: CreateTransactionDto,transactionQueue:string): Promise<void> {
     const params = {
-      QueueUrl: process.env.SQS_TRANSACTIONS_QUEUE,  
+      QueueUrl: transactionQueue,  
       MessageBody: JSON.stringify(transaction),
     };
 

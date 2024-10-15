@@ -98,12 +98,18 @@ resource "aws_dynamodb_table" "transactions_table" {
     type = "S"
   }
 
+  attribute {
+    name = "payment_type"
+    type = "S"
+  }
+
   # GSI to account_id
   global_secondary_index {
     name               = "AccountIndex"
     hash_key           = "account_id"
     projection_type    = "ALL"
   }
+  
 
     # GSI to status
   global_secondary_index {
@@ -111,6 +117,14 @@ resource "aws_dynamodb_table" "transactions_table" {
     hash_key           = "status"
     projection_type    = "ALL"
   }
+
+    # GSI to payment_type
+  global_secondary_index {
+    name               = "PaymentTypeIndex"
+    hash_key           = "payment_type"
+    projection_type    = "ALL"
+  }
+
 
   # GSI to merchant_id
   global_secondary_index {
@@ -215,8 +229,30 @@ resource "aws_dynamodb_table" "merchants_table" {
   }
 }
 
+# Crear la DLQ para PaymentMethodA y PaymentMethodB
+resource "aws_sqs_queue" "dlq" {
+  name                        = "payment-dead-letter-queue"
+  message_retention_seconds    = 1209600  # 14 días de retención
+}
 
+# Cola para PaymentMethodA
+resource "aws_sqs_queue" "payment_method_a_queue" {
+  name                        = "payment-method-a-queue"
+  visibility_timeout_seconds   = 30
+  message_retention_seconds    = 86400
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.dlq.arn   # Vincular la cola principal con la DLQ
+    maxReceiveCount     = 5                       # Reintentar 5 veces antes de mover el mensaje a la DLQ
+  })
+}
 
-resource "aws_sqs_queue" "transaction_queue" {
-  name = "transaction-queue"
+# Cola para PaymentMethodB
+resource "aws_sqs_queue" "payment_method_b_queue" {
+  name                        = "payment-method-b-queue"
+  visibility_timeout_seconds   = 30
+  message_retention_seconds    = 86400
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.dlq.arn   # Vincular la cola principal con la DLQ
+    maxReceiveCount     = 5                       # Reintentar 5 veces antes de mover el mensaje a la DLQ
+  })
 }
