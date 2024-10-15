@@ -119,6 +119,92 @@ resource "aws_dynamodb_table" "transactions_table" {
     projection_type    = "ALL"
   }
 }
+
+resource "aws_dynamodb_table" "merchants_table" {
+  name         = "Merchants"
+  hash_key     = "merchant_id"
+  billing_mode = "PAY_PER_REQUEST"
+
+  attribute {
+    name = "merchant_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "account_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "created_at"
+    type = "S"
+  }
+
+  attribute {
+    name = "document_type"
+    type = "S"
+  }
+
+  attribute {
+    name = "merchant_type"
+    type = "S"
+  }
+
+  attribute {
+    name = "name"
+    type = "S"
+  }
+
+  attribute {
+    name = "legal_name"
+    type = "S"
+  }
+
+  # Global Secondary Index for document_type
+  global_secondary_index {
+    name               = "DocumentTypeIndex"
+    hash_key           = "document_type"
+    projection_type    = "ALL"
+  }
+
+  # Global Secondary Index for created_at
+  global_secondary_index {
+    name               = "CreatedAtIndex"
+    hash_key           = "created_at"
+    projection_type    = "ALL"
+  }
+
+  # Global Secondary Index for merchant_type
+  global_secondary_index {
+    name               = "MerchantTypeIndex"
+    hash_key           = "merchant_type"
+    projection_type    = "ALL"
+  }
+
+  # Global Secondary Index for name
+  global_secondary_index {
+    name               = "NameIndex"
+    hash_key           = "name"
+    projection_type    = "ALL"
+  }
+
+  # Global Secondary Index for legal_name
+  global_secondary_index {
+    name               = "LegalNameIndex"
+    hash_key           = "legal_name"
+    projection_type    = "ALL"
+  }
+
+  # Global Secondary Index for account_id
+  global_secondary_index {
+    name               = "AccountIdIndex"
+    hash_key           = "account_id"
+    projection_type    = "ALL"
+  }
+}
+
+
+
 resource "aws_sqs_queue" "transaction_queue" {
   name = "transaction-queue"
 }
