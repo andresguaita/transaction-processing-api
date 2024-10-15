@@ -33,3 +33,24 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Terraform state files
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+
+# Lock files (used to pin provider versions)
+.terraform.lock.hcl
+terraform.lock.hcl
+
+# Terraform cache and local directories
+.terraform/
+
+# Terraform plan files (used to store plan execution results)
+*.tfplan
+
+# Sensitive variable files (potentially containing credentials or secrets)
+*.tfvars
+*.tfvars.json
+
