@@ -11,14 +11,9 @@ export class PaymentService {
   }
 
   async processTransaction(transaction: Transaction): Promise<void> {
-    let status:string;
     console.log(`Processing payment for transaction: ${transaction.transactionId}`);
-
     const processorResponse= await PaymentMethodBService.submitRequest(transaction);
-
-    if(processorResponse){ status = 'APPROVED'}
-    else {status = 'ERROR'}
-
+    const status = processorResponse.status;
     await this.dynamoDBService.updateTransactionStatus(transaction.transactionId,status);
   }
 }

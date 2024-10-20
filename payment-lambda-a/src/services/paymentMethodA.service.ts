@@ -2,12 +2,16 @@ import { Transaction } from "../interfaces/transaction.interface";
 
 export class PaymentMethodAService {
     
-    public static async submitRequest(transaction: Transaction): Promise<{ success: boolean }> {
-      const randomFailure = Math.random() < 0.3; 
-      if (randomFailure) {
-        return { success: false };
+    public static async submitRequest(transaction: Transaction): Promise<{ success: boolean, status: string }> {
+      const randomError = Math.random() < 0.3; 
+      const randomDeclined = Math.random() < 0.5; 
+      if (randomError) {
+        return { success: false, status : 'ERROR' };
       }
-      return { success: true };
+      else if(randomDeclined){
+        return { success: false, status: 'DECLINED' };
+      }
+      return { success: true, status: 'APPROVED' };
     }
   }
   
