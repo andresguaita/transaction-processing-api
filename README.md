@@ -59,6 +59,27 @@ In the development of our **Transaction Processing API**, scalability has been p
 ![System Architecture Diagram](https://res.cloudinary.com/dxymci4b6/image/upload/v1729465252/m26f7s09f9ahpryvzjq4.png)
 ![Flow Chart](https://res.cloudinary.com/dxymci4b6/image/upload/v1729465248/gd879xfw1oo0s2fcqsge.png)
 
+## Setup Instructions
+
+1. **Generate Lambda Zips**:
+   - Generate zip for lambdas payment method a and b .
+      1.- Move to terraform folder `cd payment-lambda-a`.
+      2.- Run  `npm install`
+      3.- Run `npx tsc`
+      4.- If you are in mac/linux `zip -r src/handler.zip src/ node_modules/ package.json` or if you are in windows `Compress-Archive -Path .\src\*, .\node_modules\*, .\package.json -DestinationPath .\src\handler.zip`.
+      5.- Repeat for lambda payment-lambda-b .
+
+2. **Run LocalStack**:
+   - Install and configure LocalStack with docker `docker-compose up -d`.
+   - Run the Terraform scripts to provision the AWS resources simulated in LocalStack
+      1.- Move to terraform folder `cd scripts/terraform`.
+      2.- Run  `terraform init`
+      3.- Run `terraform apply --auto-approve`
+
+3. **Run the API**:
+   - Install dependencies with `npm install`.
+   - Start the NestJS API with `npm run start:dev`.
+
 ## Endpoints
 
 ### 1. **POST /transactions**

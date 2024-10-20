@@ -54,7 +54,6 @@ export class AntifraudService implements AntifraudEngine {
     currentGeoData: GeoIPResponse,
     previousTransactions: Transaction[],
   ): Promise<boolean> {
-    // Obtener las IPs previas y sus datos de geolocalización
     const previousGeoDataPromises = previousTransactions.map((tx) =>
       this.geoIpProvider.getGeoData(tx.source_ip)
     );
