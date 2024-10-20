@@ -56,8 +56,8 @@ In the development of our **Transaction Processing API**, scalability has been p
    - **Consistency**: By choosing scalability, we acknowledge that **strict consistency** (where each transaction is validated and processed end-to-end immediately) is not fully guaranteed. However, the implementation of eventual consistency ensures that any temporary inconsistencies are resolved over time.
    - **High Availability**: The use of scalable serverless functions (Lambdas) ensures that the system remains highly available, distributing transaction processing workloads efficiently and avoiding system downtime.
 
-![System Architecture Diagram](https://drive.google.com/file/d/1tijb82c2BOkjjS3PWskUNGRzcCyUD_MY/view?usp=drive_link)
-
+![System Architecture Diagram](https://res.cloudinary.com/dxymci4b6/image/upload/v1729465252/m26f7s09f9ahpryvzjq4.png)
+![Flow Chart](https://res.cloudinary.com/dxymci4b6/image/upload/v1729465248/gd879xfw1oo0s2fcqsge.png)
 
 ## Endpoints
 
