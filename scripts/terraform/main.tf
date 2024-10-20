@@ -102,6 +102,24 @@ resource "aws_dynamodb_table" "transactions_table" {
     type = "S"
   }
 
+
+  attribute {
+    name = "customer_hash"
+    type = "S"
+  }
+
+  
+  attribute {
+    name = "created_at"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name               = "CustomerHashIndex"
+    hash_key           = "customer_hash"
+    projection_type    = "ALL"
+  }
+
   global_secondary_index {
     name               = "AccountIndex"
     hash_key           = "account_id"
@@ -125,7 +143,22 @@ resource "aws_dynamodb_table" "transactions_table" {
     hash_key           = "merchant_id"
     projection_type    = "ALL"
   }
+
+    global_secondary_index {
+    name               = "CreatedAtIndexIndex"
+    hash_key           = "created_at"
+    projection_type    = "ALL"
+  }
+
+    global_secondary_index {
+    name               = "CustomerHashCreatedAtIndex"
+    hash_key           = "customer_hash"
+    range_key          = "created_at"
+    projection_type    = "ALL"
+  }
 }
+
+
 
 resource "aws_dynamodb_table" "merchants_table" {
   name         = "Merchants"
@@ -259,6 +292,21 @@ resource "aws_lambda_function" "lambda_payment_method_a" {
   } 
 }
 
+resource "aws_lambda_function" "lambda_payment_method_b" {
+  function_name = "lambda-payment-method-b"
+  handler       = "index.handler"
+  runtime       = "nodejs20.x"
+  timeout = 60
+  filename      = "../../payment-lambda-b/src/handler.zip"
+  role          = aws_iam_role.lambda_exec.arn
+  environment {
+    variables = {
+      TABLE_NAME = "Transactions",
+       URL = "http://host.docker.internal:4566"
+    }
+  } 
+}
+
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
   assume_role_policy = jsonencode({
@@ -288,7 +336,10 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "sqs:GetQueueAttributes"
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:sqs:us-east-1:000000000000:payment-method-a-queue"
+        Resource = [
+          "arn:aws:sqs:us-east-1:000000000000:payment-method-a-queue",
+          "arn:aws:sqs:us-east-1:000000000000:payment-method-b-queue"
+        ]
       },
       {
         Action = [
@@ -301,6 +352,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
     ]
   })
 }
+
 
 # Dead Letter Queue for PaymentMethodA and PaymentMethodB
 resource "aws_sqs_queue" "dlq" {
@@ -330,7 +382,7 @@ resource "aws_sqs_queue" "payment_method_b_queue" {
   })
 
 }
-resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger" {
+resource "aws_lambda_event_source_mapping" "sqs_lambda_payment_method_a_trigger" {
   event_source_arn = aws_sqs_queue.payment_method_a_queue.arn
   function_name    = aws_lambda_function.lambda_payment_method_a.arn
   batch_size       = 1
@@ -338,6 +390,17 @@ resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger" {
     
   depends_on = [
     aws_lambda_function.lambda_payment_method_a
+  ]
+}
+
+resource "aws_lambda_event_source_mapping" "sqs_lambda_payment_method_b_trigger" {
+  event_source_arn = aws_sqs_queue.payment_method_b_queue.arn
+  function_name    = aws_lambda_function.lambda_payment_method_a.arn
+  batch_size       = 1
+  enabled          = true
+    
+  depends_on = [
+    aws_lambda_function.lambda_payment_method_b
   ]
 }
 

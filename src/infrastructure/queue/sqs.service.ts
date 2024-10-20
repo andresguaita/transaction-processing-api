@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
-import { CreateTransactionDto } from '../../application/dtos/create-transaction.dto';
+import { Transaction } from '../../domain/entities/transaction.entity';
 
 
 @Injectable()
 export class SqsService {
   private sqsClient = new SQSClient({ region: process.env.AWS_REGION });
 
-  async sendMessage(transaction: CreateTransactionDto,transactionQueue:string): Promise<void> {
+  async sendMessage(transaction: Transaction,transactionQueue:string): Promise<void> {
     const params = {
       QueueUrl: transactionQueue,  
       MessageBody: JSON.stringify(transaction),

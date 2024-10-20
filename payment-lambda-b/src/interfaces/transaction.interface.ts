@@ -3,7 +3,7 @@ export interface Transaction{
     accountId: string,
     merchantId: string,
     status: string,
-    created_at: string,
+    createdAt: string,
     amount:number,
     payment_type: string
 

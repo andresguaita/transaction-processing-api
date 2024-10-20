@@ -15,7 +15,10 @@ export class TransactionRepository {
         merchant_id: transaction.merchantId,
         amount: transaction.amount,
         status: transaction.status,
-        created_at: transaction.createdAt
+        created_at: transaction.created_at,
+        source_ip: transaction.source_ip,
+        customer_data: transaction.customer_data,
+        customer_hash: transaction.customer_hash
       },
     };
     await this.dynamoService.put(params);
@@ -56,6 +59,22 @@ export class TransactionRepository {
     return result.Items ? (result.Items as Transaction[]) : [];
   }
 
+  async findLastTenMinutesByCustomerHash(customerHash: string): Promise<Transaction[]> {
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    const params = {
+      TableName: process.env.DYNAMODB_TRANSACTIONS_TABLE,
+      IndexName: 'CustomerHashCreatedAtIndex',
+      KeyConditionExpression: 'customer_hash = :customerHash AND created_at >= :tenMinutesAgo',
+      ExpressionAttributeValues: {
+        ':customerHash': customerHash,
+        ':tenMinutesAgo': tenMinutesAgo
+      },
+    };
+  
+    const result = await this.dynamoService.query(params);
+    return result.Items ? (result.Items as Transaction[]) : [];
+  }
+  
 
   async updateStatus(transactionId: string, updateData: Partial<Transaction>): Promise<void> {
     const updateExpressions = [];
@@ -87,10 +106,10 @@ export class TransactionRepository {
       expressionAttributeValues[':status'] = updateData.status;
     }
 
-    if (updateData.createdAt) {
+    if (updateData.created_at) {
       updateExpressions.push('#created_at = :created_at');
       expressionAttributeNames['#created_at'] = 'created_at';
-      expressionAttributeValues[':created_at'] = updateData.createdAt;
+      expressionAttributeValues[':created_at'] = updateData.created_at;
     }
 
     // Si no hay campos para actualizar, no hacer nada

@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsJSON, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { CustomerData } from '../interfaces/customer-data.interface';
 
 export class CreateTransactionDto {
   @IsString()
@@ -19,6 +20,10 @@ export class CreateTransactionDto {
 
   @IsString()
   @IsNotEmpty()
-  payment_type: string;
+  paymentType: string;
+
+  @IsJSON()
+  @IsNotEmpty()
+  customerData: CustomerData;
 
 }

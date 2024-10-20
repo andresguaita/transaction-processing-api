@@ -2,7 +2,7 @@
 /dist
 /node_modules
 /payment-lambda-a/node_modules
-
+/payment-lambda-b/node_modules
 # Logs
 logs
 *.log
