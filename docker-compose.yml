@@ -1,15 +1,26 @@
-version: "3.8"
+version: '3.8'
 
 services:
   localstack:
-    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
-    image: localstack/localstack
+    image: localstack/localstack:latest
+    container_name: localstack
     ports:
-      - "127.0.0.1:4566:4566"            
-      - "127.0.0.1:4510-4559:4510-4559"
+      - "4566:4566"     # Puerto principal para todos los servicios
+      - "4571:4571"     # Puerto para lambdas (deprecado en nuevas versiones)
     environment:
-
-      - DEBUG=${DEBUG:-0}
+      - SERVICES=sqs,dynamodb,iam,lambda
+      - DEBUG=1                       # Habilitar logs detallados para depuración
+      - DATA_DIR=/tmp/localstack/data # Persistir datos localmente
+      - LAMBDA_EXECUTOR=docker        # Ejecutar Lambdas en contenedores Docker
+      - LAMBDA_REMOTE_DOCKER=false    # Evitar que LocalStack intente conectarse a Docker de forma remota
+      - LAMBDA_DOCKER_NETWORK=localstack_default # Usar la red de Docker Compose
+      - HOSTNAME_EXTERNAL=localhost   # Hostname externo para acceder a LocalStack
     volumes:
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Montar Docker socket para ejecutar Lambdas en contenedores
+      - "./localstack_data:/my-localstack" # Cambiar el volumen
+    networks:
+      - localstack_net
+
+networks:
+  localstack_net:
+    name: localstack_default

@@ -48,5 +48,19 @@ export class TransactionService {
       throw new InternalServerErrorException(`Failed to process transaction ${transaction.transactionId}`);
     }
   }
+
+  async processTransaction(transaction: any): Promise<void> {
+    try {
+      this.logger.log(`Processing transaction ${transaction.transactionId}`);
+
+      // Lógica personalizada de procesamiento de transacciones (actualización de estado)
+      await this.transactionRepository.updateStatus(transaction.transactionId, {status: 'APPROVED'});
+
+      this.logger.log(`Transaction ${transaction.transactionId} processed successfully`);
+    } catch (error) {
+      this.logger.error(`Error processing transaction ${transaction.transactionId}:`, error.message);
+      throw error;
+    }
+  }
 }
 

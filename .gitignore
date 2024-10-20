@@ -1,6 +1,7 @@
 # compiled output
 /dist
 /node_modules
+/payment-lambda-a/node_modules
 
 # Logs
 logs
@@ -61,3 +62,16 @@ terraform.lock.hcl
 *.tfvars
 *.tfvars.json
 
+
+# Ignorar todos los archivos .js generados
+*.js
+
+# Ignorar todos los archivos .zip generados
+*.zip
+
+# Ignorar la carpeta dist/ o build/ si se generan archivos compilados aquí (opcional)
+dist/
+build/
+
+# Si hay excepciones y deseas rastrear archivos .js específicos, puedes usar esta línea:
+# !src/keep-me.js

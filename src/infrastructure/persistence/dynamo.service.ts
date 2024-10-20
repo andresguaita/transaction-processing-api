@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { PutCommand, GetCommand, QueryCommand, DeleteCommand, DynamoDBDocumentClient, PutCommandOutput } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, GetCommand, QueryCommand, DeleteCommand, DynamoDBDocumentClient, PutCommandOutput, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 @Injectable()
 export class DynamoService {
@@ -19,6 +19,11 @@ export class DynamoService {
         const command = new PutCommand(params);
         const response = await this.dynamoDbDocumentClient.send(command);
         return response;
+    }
+
+    async update(params: any): Promise<void> {
+        const command = new UpdateCommand(params);
+        await this.dynamoDbClient.send(command);
     }
 
 
@@ -40,4 +45,5 @@ export class DynamoService {
         const command = new DeleteCommand(params);
         await this.dynamoDbDocumentClient.send(command);
     }
+
 }
